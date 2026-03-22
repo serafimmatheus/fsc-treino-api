@@ -1,7 +1,10 @@
 import "dotenv/config";
 
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 import Fastify from "fastify";
 import {
+  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
   ZodTypeProvider,
@@ -14,6 +17,27 @@ const fastify = Fastify({
 
 fastify.setValidatorCompiler(validatorCompiler);
 fastify.setSerializerCompiler(serializerCompiler);
+
+await fastify.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: "FSC Treino API",
+      description: "API para o sistema de treinos da FSC",
+      version: "1.0.0",
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+        description: "Servidor local",
+      },
+    ],
+  },
+  transform: jsonSchemaTransform,
+});
+
+await fastify.register(fastifySwaggerUi, {
+  routePrefix: "/api",
+});
 
 fastify.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",
