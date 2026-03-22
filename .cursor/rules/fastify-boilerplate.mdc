@@ -3,7 +3,7 @@ description: Padrões do boilerplate Node + Fastify deste projeto
 alwaysApply: true
 ---
 
-# Boilerplate Node + Fastify
+# Boilerplate Node mais Fastify
 
 Ao configurar ou estender este projeto (ou novos projetos nesta stack):
 
