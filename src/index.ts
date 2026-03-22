@@ -1,13 +1,35 @@
 import "dotenv/config";
 
-import Fastify, { FastifyReply, FastifyRequest } from "fastify";
+import Fastify from "fastify";
+import {
+  serializerCompiler,
+  validatorCompiler,
+  ZodTypeProvider,
+} from "fastify-type-provider-zod";
+import z from "zod";
 
 const fastify = Fastify({
   logger: true,
 });
 
-fastify.get("/", async (request: FastifyRequest, reply: FastifyReply) => {
-  return reply.status(200).send({ message: "Hello World" });
+fastify.setValidatorCompiler(validatorCompiler);
+fastify.setSerializerCompiler(serializerCompiler);
+
+fastify.withTypeProvider<ZodTypeProvider>().route({
+  method: "GET",
+  url: "/",
+  schema: {
+    description: "Hello World",
+    tags: ["hello-world"],
+    response: {
+      200: z.object({
+        message: z.string(),
+      }),
+    },
+  },
+  handler: () => {
+    return { message: "Hello World" };
+  },
 });
 
 try {
