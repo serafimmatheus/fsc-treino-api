@@ -10,45 +10,46 @@ import {
   validatorCompiler,
   ZodTypeProvider,
 } from "fastify-type-provider-zod";
+import z from "zod";
 
 import { auth } from "./lib/auth.js";
 
-const fastify = Fastify({
+const app = Fastify({
   logger: true,
 });
 
-fastify.setValidatorCompiler(validatorCompiler);
-fastify.setSerializerCompiler(serializerCompiler);
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
 
-await fastify.register(fastifySwagger, {
+await app.register(fastifySwagger, {
   openapi: {
     info: {
-      title: "FSC Treino API",
-      description: "API para o sistema de treinos da FSC",
+      title: "Bootcamp Treinos API",
+      description: "API para o bootcamp de treinos do FSC",
       version: "1.0.0",
     },
     servers: [
       {
-        url: "http://localhost:3000",
-        description: "Servidor local",
+        description: "Localhost",
+        url: "http://localhost:8080",
       },
     ],
   },
   transform: jsonSchemaTransform,
 });
 
-await fastify.register(fastifyCors, {
-  origin: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
+await app.register(fastifyCors, {
+  origin: ["http://localhost:3000"],
   credentials: true,
 });
 
-await fastify.register(fastifyApiReference, {
+await app.register(fastifyApiReference, {
   routePrefix: "/api",
   configuration: {
     sources: [
       {
-        title: "Coach API",
-        slug: "coach-api",
+        title: "Bootcamp Treinos API",
+        slug: "bootcamp-treinos-api",
         url: "/swagger.json",
       },
       {
@@ -60,18 +61,37 @@ await fastify.register(fastifyApiReference, {
   },
 });
 
-fastify.withTypeProvider<ZodTypeProvider>().route({
+app.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",
   url: "/swagger.json",
   schema: {
     hide: true,
   },
-  handler: () => {
-    return fastify.swagger();
+  handler: async () => {
+    return app.swagger();
   },
 });
 
-fastify.route({
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: "GET",
+  url: "/",
+  schema: {
+    description: "Hello world",
+    tags: ["Hello World"],
+    response: {
+      200: z.object({
+        message: z.string(),
+      }),
+    },
+  },
+  handler: () => {
+    return {
+      message: "Hello World",
+    };
+  },
+});
+
+app.route({
   method: ["GET", "POST"],
   url: "/api/auth/*",
   async handler(request, reply) {
@@ -92,7 +112,7 @@ fastify.route({
       response.headers.forEach((value, key) => reply.header(key, value));
       reply.send(response.body ? await response.text() : null);
     } catch (error) {
-      fastify.log.error(error);
+      app.log.error(error);
       reply.status(500).send({
         error: "Internal authentication error",
         code: "AUTH_FAILURE",
@@ -102,17 +122,8 @@ fastify.route({
 });
 
 try {
-  fastify.listen(
-    { port: Number(process.env.PORT) || 3000 },
-    (err: Error | null, address: string) => {
-      if (err) {
-        fastify.log.error(err);
-        process.exit(1);
-      }
-      fastify.log.info(`Server is running on ${address}`);
-    },
-  );
-} catch (error) {
-  fastify.log.error(error);
+  await app.listen({ port: Number(process.env.PORT) || 8081 });
+} catch (err) {
+  app.log.error(err);
   process.exit(1);
 }
