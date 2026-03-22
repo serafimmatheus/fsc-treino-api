@@ -148,18 +148,18 @@ Instalar Prettier. Não há arquivo de config; usa defaults ou `.prettierrc` se 
 pnpm add fastify @fastify/cors @fastify/swagger @scalar/fastify-api-reference fastify-type-provider-zod zod dotenv @prisma/client @prisma/adapter-pg better-auth tsx
 ```
 
-| Pacote | Uso |
-|--------|-----|
-| `fastify` | Servidor HTTP |
-| `@fastify/cors` | CORS |
-| `@fastify/swagger` | OpenAPI / Swagger |
-| `@scalar/fastify-api-reference` | Documentação em `/api` |
-| `fastify-type-provider-zod` | Validação com Zod |
-| `zod` | Schemas |
-| `dotenv` | Carregar `.env` |
+| Pacote                                  | Uso                      |
+| --------------------------------------- | ------------------------ |
+| `fastify`                               | Servidor HTTP            |
+| `@fastify/cors`                         | CORS                     |
+| `@fastify/swagger`                      | OpenAPI / Swagger        |
+| `@scalar/fastify-api-reference`         | Documentação em `/api`   |
+| `fastify-type-provider-zod`             | Validação com Zod        |
+| `zod`                                   | Schemas                  |
+| `dotenv`                                | Carregar `.env`          |
 | `@prisma/client` + `@prisma/adapter-pg` | ORM + adapter PostgreSQL |
-| `better-auth` | Autenticação |
-| `tsx` | Execução TS em dev |
+| `better-auth`                           | Autenticação             |
+| `tsx`                                   | Execução TS em dev       |
 
 ### 4.2 Dependências de desenvolvimento
 
@@ -280,7 +280,7 @@ Incluir no `schema.prisma` os modelos: `Account`, `Session`, `VerificationToken`
    - `GET /` – hello world com schema Zod.
    - `GET|POST /api/auth/*` – proxy para `auth.handler` do Better Auth.
 
-5. Listen: `app.listen({ port: Number(process.env.PORT) || 8081 })`.
+5. Listen: `app.listen({ port: Number(process.env.PORT) || 3000 })`.
 
 ### 7.2 Imports de módulos locais
 
@@ -309,7 +309,7 @@ BETTER_AUTH_URL=http://localhost:3000
 ### `.env.example` (versionar)
 
 ```env
-PORT=8081
+PORT=3000
 DATABASE_URL="postgresql://user:pass@localhost:5432/dbname"
 BETTER_AUTH_SECRET=
 BETTER_AUTH_URL=http://localhost:3000
