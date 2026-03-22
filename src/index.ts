@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import fastifyCors from "@fastify/cors";
 import fastifySwagger from "@fastify/swagger";
-import fastifySwaggerUi from "@fastify/swagger-ui";
+import fastifyApiReference from "@scalar/fastify-api-reference";
 import Fastify from "fastify";
 import {
   jsonSchemaTransform,
@@ -10,7 +10,6 @@ import {
   validatorCompiler,
   ZodTypeProvider,
 } from "fastify-type-provider-zod";
-import z from "zod";
 
 import { auth } from "./lib/auth.js";
 
@@ -38,29 +37,37 @@ await fastify.register(fastifySwagger, {
   transform: jsonSchemaTransform,
 });
 
-await fastify.register(fastifySwaggerUi, {
-  routePrefix: "/api",
-});
-
 await fastify.register(fastifyCors, {
   origin: [process.env.BETTER_AUTH_URL || "http://localhost:3000"],
   credentials: true,
 });
 
+await fastify.register(fastifyApiReference, {
+  routePrefix: "/api",
+  configuration: {
+    sources: [
+      {
+        title: "Coach API",
+        slug: "coach-api",
+        url: "/swagger.json",
+      },
+      {
+        title: "Auth API",
+        slug: "auth-api",
+        url: "/api/auth/open-api/generate-schema",
+      },
+    ],
+  },
+});
+
 fastify.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",
-  url: "/",
+  url: "/swagger.json",
   schema: {
-    description: "Hello World",
-    tags: ["hello-world"],
-    response: {
-      200: z.object({
-        message: z.string(),
-      }),
-    },
+    hide: true,
   },
   handler: () => {
-    return { message: "Hello World" };
+    return fastify.swagger();
   },
 });
 
