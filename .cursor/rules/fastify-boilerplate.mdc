@@ -1,0 +1,14 @@
+---
+description: Padrões do boilerplate Node + Fastify deste projeto
+alwaysApply: true
+---
+
+# Boilerplate Node + Fastify
+
+Ao configurar ou estender este projeto (ou novos projetos nesta stack):
+
+- Consultar **SETUP_BOILERPLATE.md** para o passo a passo completo de setup.
+- Stack: Node 24, ESM, Fastify 5, Zod, Prisma 7, Better Auth, PostgreSQL.
+- Imports locais: usar extensão `.js` (ex: `./lib/auth.js`).
+- Variáveis sensíveis apenas em `.env`; nunca versionar.
+- ESLint + Prettier: format on save, simple-import-sort.

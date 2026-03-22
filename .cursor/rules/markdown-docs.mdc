@@ -1,0 +1,11 @@
+---
+description: Considera documentação em Markdown e SETUP_BOILERPLATE para novos projetos Fastify
+globs: **/*.md
+alwaysApply: false
+---
+
+# Documentação Markdown
+
+- Ao editar ou criar arquivos `.md`, manter estrutura clara, índices e exemplos práticos.
+- Documentação para usuário do projeto: preferir português.
+- **SETUP_BOILERPLATE.md**: guia passo a passo para iniciar novos projetos Node + Fastify. Consultar esse arquivo ao configurar novos projetos nesta stack (Fastify, Prisma 7, Better Auth, Zod, etc.).
