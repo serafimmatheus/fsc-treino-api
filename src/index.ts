@@ -146,6 +146,7 @@ app.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",
   url: "/swagger.json",
   schema: {
+    operationId: "getSwaggerJson",
     hide: true,
   },
   handler: async () => {

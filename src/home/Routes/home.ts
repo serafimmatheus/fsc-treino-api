@@ -4,10 +4,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { auth } from "../../lib/auth.js";
 import { ErrorSchema } from "../../schemas/ErrorSchema.js";
-import {
-  GetHomeParamsSchema,
-  GetHomeResponseSchema,
-} from "../schemas.js";
+import { GetHomeParamsSchema, GetHomeResponseSchema } from "../schemas.js";
 import type { GetHomeData } from "../UseCases/GetHomeData.js";
 
 interface HomeRoutesOptions {
@@ -24,6 +21,7 @@ export const homeRoutes: FastifyPluginAsync<HomeRoutesOptions> = async (
     method: "GET",
     url: "/:date",
     schema: {
+      operationId: "getHomeData",
       tags: ["Home"],
       summary: "Get home page data",
       description:

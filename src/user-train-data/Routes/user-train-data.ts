@@ -20,6 +20,7 @@ export const userTrainDataRoutes: FastifyPluginAsync<
     method: "GET",
     url: "/me",
     schema: {
+      operationId: "getUserTrainData",
       tags: ["Me"],
       summary: "Get current user train data",
       description:

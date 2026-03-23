@@ -53,6 +53,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     method: "GET",
     url: "/",
     schema: {
+      operationId: "listWorkoutPlans",
       tags: ["Workout Plan"],
       summary: "List workout plans",
       description:
@@ -98,6 +99,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     method: "GET",
     url: "/:id",
     schema: {
+      operationId: "getWorkoutPlanById",
       tags: ["Workout Plan"],
       summary: "Get workout plan by ID",
       description: "Retorna o plano de treino com seus dias (exercisesCount)",
@@ -156,6 +158,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     method: "GET",
     url: "/:workoutPlanId/days/:workoutDayId",
     schema: {
+      operationId: "getWorkoutDayById",
       tags: ["Workout Plan"],
       summary: "Get workout day by ID",
       description:
@@ -216,6 +219,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     method: "POST",
     url: "/",
     schema: {
+      operationId: "createWorkoutPlan",
       tags: ["Workout Plan"],
       summary: "Create a new workout plan",
       description: "Create a new workout plan",
@@ -286,6 +290,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     method: "POST",
     url: "/:workoutPlanId/days/:workoutDayId/sessions",
     schema: {
+      operationId: "startWorkoutSession",
       tags: ["Workout Plan"],
       summary: "Start a workout session",
       description: "Start a workout session",
@@ -354,6 +359,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     method: "PATCH",
     url: "/:workoutPlanId/days/:workoutDayId/sessions/:sessionId",
     schema: {
+      operationId: "updateWorkoutSession",
       tags: ["Workout Plan"],
       summary: "Update a workout session",
       description: "Atualiza uma sessão de treino específica",

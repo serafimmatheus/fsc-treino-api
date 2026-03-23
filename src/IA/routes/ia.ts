@@ -109,6 +109,7 @@ export const iaRoutes: FastifyPluginAsync<IaRoutesOptions> = async (
     method: "POST",
     url: "/",
     schema: {
+      operationId: "chatWithIA",
       tags: ["IA"],
       summary: "Chat com personal trainer virtual",
       body: z.object({

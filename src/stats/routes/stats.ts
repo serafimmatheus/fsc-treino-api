@@ -21,6 +21,7 @@ export const statsRoutes: FastifyPluginAsync<StatsRoutesOptions> = async (
     method: "GET",
     url: "/",
     schema: {
+      operationId: "getStats",
       tags: ["Stats"],
       summary: "Get user statistics",
       description:
