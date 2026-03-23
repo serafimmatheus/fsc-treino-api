@@ -11,6 +11,8 @@ import {
   ZodTypeProvider,
 } from "fastify-type-provider-zod";
 
+import { homeRoutes } from "./home/Routes/home.js";
+import { GetHomeData } from "./home/UseCases/GetHomeData.js";
 import { auth } from "./lib/auth.js";
 import { prisma } from "./lib/db.js";
 import { PrismaUserWorkoutSessionRepository } from "./workout-plan/Repositories/PrismaUserWorkoutSessionRepository.js";
@@ -69,8 +71,9 @@ await app.register(fastifyApiReference, {
 
 // DI container - Repositories & UseCases
 const workoutPlanRepository = new PrismaWorkoutPlanRepository(prisma);
-const userWorkoutSessionRepository =
-  new PrismaUserWorkoutSessionRepository(prisma);
+const userWorkoutSessionRepository = new PrismaUserWorkoutSessionRepository(
+  prisma,
+);
 const createWorkoutPlan = new CreateWorkoutPlan(workoutPlanRepository);
 const startWorkoutSession = new StartWorkoutSession(
   workoutPlanRepository,
@@ -80,8 +83,16 @@ const updateWorkoutSession = new UpdateWorkoutSession(
   workoutPlanRepository,
   userWorkoutSessionRepository,
 );
+const getHomeData = new GetHomeData(
+  workoutPlanRepository,
+  userWorkoutSessionRepository,
+);
 
 // Routes
+await app.register(homeRoutes, {
+  prefix: "/home",
+  getHomeData,
+});
 await app.register(workoutPlanRoutes, {
   prefix: "/workout-plans",
   createWorkoutPlan,

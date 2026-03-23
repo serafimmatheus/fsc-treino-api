@@ -45,6 +45,17 @@ export class StartWorkoutSession {
       );
     }
 
+    const completedSession =
+      await this.userWorkoutSessionRepository.findCompletedByUserIdAndWorkoutDayId(
+        userId,
+        workoutDayId,
+      );
+    if (completedSession) {
+      throw new ErrorConflict(
+        "Este dia de treino já foi concluído. Não é possível iniciar novamente.",
+      );
+    }
+
     const { id } = await this.userWorkoutSessionRepository.create(
       userId,
       workoutDayId,

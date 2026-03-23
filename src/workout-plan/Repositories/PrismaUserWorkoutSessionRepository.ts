@@ -2,6 +2,7 @@ import type { PrismaClient } from "../../generated/prisma/client.js";
 import type {
   IUserWorkoutSessionRepository,
   UserWorkoutSessionById,
+  UserWorkoutSessionInRange,
   UserWorkoutSessionUpdated,
   UserWorkoutSessionWithDetails,
 } from "./contracts/IUserWorkoutSessionRepository.js";
@@ -35,6 +36,44 @@ export class PrismaUserWorkoutSessionRepository
       select: { id: true },
     });
     return session;
+  }
+
+  async findCompletedByUserIdAndWorkoutDayId(
+    userId: string,
+    workoutDayId: string,
+  ): Promise<UserWorkoutSessionById | null> {
+    const session = await this.prisma.userWorkoutSession.findFirst({
+      where: {
+        userId,
+        workoutDayId,
+        completedAt: { not: null },
+      },
+      select: { id: true },
+    });
+    return session;
+  }
+
+  async findByUserIdAndDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<UserWorkoutSessionInRange[]> {
+    const sessions = await this.prisma.userWorkoutSession.findMany({
+      where: {
+        userId,
+        startedAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        id: true,
+        workoutDayId: true,
+        startedAt: true,
+        completedAt: true,
+      },
+    });
+    return sessions;
   }
 
   async findById(

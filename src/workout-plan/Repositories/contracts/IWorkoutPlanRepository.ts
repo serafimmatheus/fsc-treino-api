@@ -48,8 +48,31 @@ export interface WorkoutPlanById {
   workoutDays: Array<{ id: string }>;
 }
 
+export interface WorkoutPlanActiveWithDetails {
+  id: string;
+  name: string;
+  workoutDays: Array<{
+    id: string;
+    name: string;
+    isRest: boolean;
+    weekDay: WeekDay;
+    coverImageUrl: string | null;
+    estimatedDurationInSeconds: number;
+    workoutExercises: Array<{
+      order: number;
+      name: string;
+      sets: number;
+      reps: number;
+      restTimeInSeconds: number;
+    }>;
+  }>;
+}
+
 export interface IWorkoutPlanRepository {
   findById(id: string): Promise<WorkoutPlanById | null>;
+  findActiveByUserId(
+    userId: string,
+  ): Promise<WorkoutPlanActiveWithDetails | null>;
   createReplacingActive(
     userId: string,
     data: Omit<CreateWorkoutPlanRepositoryData, "userId">,

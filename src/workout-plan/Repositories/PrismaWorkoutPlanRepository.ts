@@ -2,12 +2,48 @@ import type { PrismaClient } from "../../generated/prisma/client.js";
 import type {
   CreateWorkoutPlanRepositoryData,
   IWorkoutPlanRepository,
+  WorkoutPlanActiveWithDetails,
   WorkoutPlanById,
   WorkoutPlanWithRelations,
 } from "./contracts/IWorkoutPlanRepository.js";
 
 export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async findActiveByUserId(
+    userId: string,
+  ): Promise<WorkoutPlanActiveWithDetails | null> {
+    const result = await this.prisma.workoutPlan.findFirst({
+      where: { userId, isActive: true },
+      include: {
+        workoutDays: {
+          include: {
+            workoutExercises: true,
+          },
+        },
+      },
+    });
+    if (!result) return null;
+    return {
+      id: result.id,
+      name: result.name,
+      workoutDays: result.workoutDays.map((wd) => ({
+        id: wd.id,
+        name: wd.name,
+        isRest: wd.isRest,
+        weekDay: wd.weekDay,
+        coverImageUrl: wd.coverImageUrl,
+        estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
+        workoutExercises: wd.workoutExercises.map((ex) => ({
+          order: ex.order,
+          name: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          restTimeInSeconds: ex.restTimeInSeconds,
+        })),
+      })),
+    };
+  }
 
   async findById(id: string): Promise<WorkoutPlanById | null> {
     const result = await this.prisma.workoutPlan.findUnique({

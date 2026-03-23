@@ -100,7 +100,7 @@ export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
 
 - Arquivos em `schemas/` com export de schemas reutilizáveis.
 - Usar `z.object()`, validações `.min()`, `.trim()` para strings.
-- Enums do Prisma: `z.enum(WeekDay)` importando de `generated/prisma/enums.js`.
+- **Enums do Prisma**: Sempre usar `z.enum(WeekDay)` (ou outro enum existente) importando de `generated/prisma/enums.js` — nunca `z.string()` para campos que representam enums do banco.
 - `ErrorSchema`: `z.object({ message: z.string(), code: z.string() })`.
 - Schemas de response consistentes com o body (omit `id` quando criar).
 
