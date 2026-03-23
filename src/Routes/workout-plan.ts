@@ -55,6 +55,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<WorkoutPlanRoutesOptions> =
               id: workoutDay.id,
               name: workoutDay.name,
               weekDay: workoutDay.weekDay,
+              coverImageUrl: workoutDay.coverImageUrl ?? undefined,
               estimatedDurationInSeconds: workoutDay.estimatedDurationInSeconds,
               exercises: workoutDay.workoutExercises.map((exercise) => ({
                 order: exercise.order,

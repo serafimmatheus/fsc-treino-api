@@ -33,6 +33,7 @@ export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
               name: wd.name,
               weekDay: wd.weekDay,
               isRest: wd.isRest,
+              coverImageUrl: wd.coverImageUrl ?? null,
               estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
               workoutExercises: {
                 create: wd.exercises.map((ex) => ({
@@ -73,6 +74,8 @@ export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
         id: wd.id,
         name: wd.name,
         weekDay: wd.weekDay,
+        coverImageUrl:
+          "coverImageUrl" in wd ? (wd.coverImageUrl as string | null) : null,
         estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
         workoutExercises: wd.workoutExercises.map((ex) => ({
           order: ex.order,

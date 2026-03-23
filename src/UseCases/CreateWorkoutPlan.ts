@@ -14,6 +14,7 @@ interface WorkoutDayData {
   name: string;
   weekDay: WeekDay;
   isRest: boolean;
+  coverImageUrl?: string;
   estimatedDurationInSeconds: number;
   exercises: ExerciseData[];
 }
@@ -39,6 +40,7 @@ export class CreateWorkoutPlan {
         name: wd.name,
         weekDay: wd.weekDay,
         isRest: wd.isRest,
+        coverImageUrl: wd.coverImageUrl,
         estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
         exercises: wd.exercises.map((ex) => ({
           order: ex.order,

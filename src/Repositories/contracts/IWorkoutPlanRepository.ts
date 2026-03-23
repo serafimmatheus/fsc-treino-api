@@ -10,6 +10,7 @@ export interface CreateWorkoutDayRepositoryData {
   name: string;
   weekDay: WeekDay;
   isRest: boolean;
+  coverImageUrl?: string;
   estimatedDurationInSeconds: number;
   exercises: CreateWorkoutExerciseRepositoryData[];
 }
@@ -29,6 +30,7 @@ export interface WorkoutPlanWithRelations {
     id: string;
     name: string;
     weekDay: WeekDay;
+    coverImageUrl: string | null;
     estimatedDurationInSeconds: number;
     workoutExercises: Array<{
       order: number;
