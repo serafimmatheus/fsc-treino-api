@@ -56,7 +56,7 @@ export const workoutPlanRoutes: FastifyPluginAsync<
       tags: ["Workout Plan"],
       summary: "List workout plans",
       description:
-        "Lista os planos de treino do usuário. Use o filtro active para filtrar por plano ativo ou inativo.",
+        "Lista os planos de treino do usuário. Filtro active opcional: ?active=true (apenas ativos), ?active=false (apenas inativos). Sem o filtro, retorna todos.",
       querystring: ListWorkoutPlansQuerySchema,
       response: {
         200: ListWorkoutPlansResponseSchema,

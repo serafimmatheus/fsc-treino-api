@@ -67,9 +67,11 @@ export const GetWorkoutDayResponseSchema = z.object({
 
 export const ListWorkoutPlansQuerySchema = z.object({
   active: z
-    .union([z.literal("true"), z.literal("false")])
+    .string()
     .optional()
-    .transform((val) => (val === "true" ? true : val === "false" ? false : undefined)),
+    .transform((val) =>
+      val === "true" ? true : val === "false" ? false : undefined,
+    ),
 });
 
 const ListWorkoutPlanExerciseSchema = z.object({
