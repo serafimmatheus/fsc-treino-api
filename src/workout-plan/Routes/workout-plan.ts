@@ -8,6 +8,8 @@ import { ErrorNotFound } from "../../errors/ErrorNotFound.js";
 import { auth } from "../../lib/auth.js";
 import {
   ErrorSchema,
+  GetWorkoutPlanParamsSchema,
+  GetWorkoutPlanResponseSchema,
   StartWorkoutSessionParamsSchema,
   StartWorkoutSessionResponseSchema,
   UpdateWorkoutSessionBodySchema,
@@ -16,11 +18,13 @@ import {
   WorkoutPlanSchema,
 } from "../../schemas/ErrorSchema.js";
 import type { CreateWorkoutPlan } from "../UseCases/CreateWorkoutPlan.js";
+import type { GetWorkoutPlan } from "../UseCases/GetWorkoutPlan.js";
 import type { StartWorkoutSession } from "../UseCases/StartWorkoutSession.js";
 import type { UpdateWorkoutSession } from "../UseCases/UpdateWorkoutSession.js";
 
 interface WorkoutPlanRoutesOptions {
   createWorkoutPlan: CreateWorkoutPlan;
+  getWorkoutPlan: GetWorkoutPlan;
   startWorkoutSession: StartWorkoutSession;
   updateWorkoutSession: UpdateWorkoutSession;
 }
@@ -28,7 +32,70 @@ interface WorkoutPlanRoutesOptions {
 export const workoutPlanRoutes: FastifyPluginAsync<
   WorkoutPlanRoutesOptions
 > = async (app, opts) => {
-  const { createWorkoutPlan, startWorkoutSession, updateWorkoutSession } = opts;
+  const {
+    createWorkoutPlan,
+    getWorkoutPlan,
+    startWorkoutSession,
+    updateWorkoutSession,
+  } = opts;
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/:id",
+    schema: {
+      tags: ["Workout Plan"],
+      summary: "Get workout plan by ID",
+      description: "Retorna o plano de treino com seus dias (exercisesCount)",
+      params: GetWorkoutPlanParamsSchema,
+      response: {
+        200: GetWorkoutPlanResponseSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            message: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const { id } = request.params;
+        const result = await getWorkoutPlan.execute({
+          userId: session.user.id,
+          workoutPlanId: id,
+        });
+
+        return reply.status(200).send(result);
+      } catch (error) {
+        app.log.error(error);
+        if (error instanceof ErrorNotFound) {
+          return reply.status(404).send({
+            message: error.message,
+            code: error.name.toUpperCase(),
+          });
+        }
+        if (error instanceof ErrorForbidden) {
+          return reply.status(403).send({
+            message: error.message,
+            code: error.name.toUpperCase(),
+          });
+        }
+        return reply.status(500).send({
+          message: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
 
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",

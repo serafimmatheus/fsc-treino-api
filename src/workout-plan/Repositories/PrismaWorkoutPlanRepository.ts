@@ -4,6 +4,7 @@ import type {
   IWorkoutPlanRepository,
   WorkoutPlanActiveWithDetails,
   WorkoutPlanById,
+  WorkoutPlanWithDaysSummary,
   WorkoutPlanWithRelations,
 } from "./contracts/IWorkoutPlanRepository.js";
 
@@ -41,6 +42,38 @@ export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
           reps: ex.reps,
           restTimeInSeconds: ex.restTimeInSeconds,
         })),
+      })),
+    };
+  }
+
+  async findByIdWithDaysSummary(
+    id: string,
+  ): Promise<WorkoutPlanWithDaysSummary | null> {
+    const result = await this.prisma.workoutPlan.findUnique({
+      where: { id },
+      include: {
+        workoutDays: {
+          include: {
+            _count: {
+              select: { workoutExercises: true },
+            },
+          },
+        },
+      },
+    });
+    if (!result) return null;
+    return {
+      id: result.id,
+      name: result.name,
+      userId: result.userId,
+      workoutDays: result.workoutDays.map((wd) => ({
+        id: wd.id,
+        weekDay: wd.weekDay,
+        name: wd.name,
+        isRest: wd.isRest,
+        coverImageUrl: wd.coverImageUrl,
+        estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
+        exercisesCount: wd._count.workoutExercises,
       })),
     };
   }

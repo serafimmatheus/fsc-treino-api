@@ -68,8 +68,26 @@ export interface WorkoutPlanActiveWithDetails {
   }>;
 }
 
+export interface WorkoutPlanWithDaysSummary {
+  id: string;
+  name: string;
+  userId: string;
+  workoutDays: Array<{
+    id: string;
+    weekDay: WeekDay;
+    name: string;
+    isRest: boolean;
+    coverImageUrl: string | null;
+    estimatedDurationInSeconds: number;
+    exercisesCount: number;
+  }>;
+}
+
 export interface IWorkoutPlanRepository {
   findById(id: string): Promise<WorkoutPlanById | null>;
+  findByIdWithDaysSummary(
+    id: string,
+  ): Promise<WorkoutPlanWithDaysSummary | null>;
   findActiveByUserId(
     userId: string,
   ): Promise<WorkoutPlanActiveWithDetails | null>;
