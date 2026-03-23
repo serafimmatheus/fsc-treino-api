@@ -49,7 +49,7 @@ await app.register(fastifySwagger, {
     servers: [
       {
         description: "Localhost",
-        url: `http://localhost:${process.env.PORT || 3000}`,
+        url: `http://localhost:${process.env.PORT || 5555}`,
       },
     ],
   },
@@ -57,7 +57,7 @@ await app.register(fastifySwagger, {
 });
 
 await app.register(fastifyCors, {
-  origin: ["http://localhost:3000"],
+  origin: [`http://localhost:${process.env.PORT || 5555}`],
   credentials: true,
 });
 
