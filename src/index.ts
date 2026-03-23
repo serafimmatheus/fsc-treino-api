@@ -17,6 +17,9 @@ import { auth } from "./lib/auth.js";
 import { prisma } from "./lib/db.js";
 import { statsRoutes } from "./stats/routes/stats.js";
 import { GetStats } from "./stats/UseCases/GetStats.js";
+import { PrismaUserTrainDataRepository } from "./user-train-data/Repositories/PrismaUserTrainDataRepository.js";
+import { userTrainDataRoutes } from "./user-train-data/Routes/user-train-data.js";
+import { GetUserTrainData } from "./user-train-data/UseCases/GetUserTrainData.js";
 import { PrismaUserWorkoutSessionRepository } from "./workout-plan/Repositories/PrismaUserWorkoutSessionRepository.js";
 import { PrismaWorkoutPlanRepository } from "./workout-plan/Repositories/PrismaWorkoutPlanRepository.js";
 import { workoutPlanRoutes } from "./workout-plan/Routes/workout-plan.js";
@@ -99,6 +102,8 @@ const getStats = new GetStats(
   workoutPlanRepository,
   userWorkoutSessionRepository,
 );
+const userTrainDataRepository = new PrismaUserTrainDataRepository(prisma);
+const getUserTrainData = new GetUserTrainData(userTrainDataRepository);
 
 // Routes
 await app.register(homeRoutes, {
@@ -117,6 +122,10 @@ await app.register(workoutPlanRoutes, {
 await app.register(statsRoutes, {
   prefix: "/stats",
   getStats,
+});
+await app.register(userTrainDataRoutes, {
+  prefix: "",
+  getUserTrainData,
 });
 
 app.withTypeProvider<ZodTypeProvider>().route({

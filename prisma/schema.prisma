@@ -33,8 +33,23 @@ model User {
   userWorkoutSessions UserWorkoutSession[]
   accounts            Account[]
   sessions            Session[]
+  userTrainData       UserTrainData?
 
   @@map("user")
+}
+
+model UserTrainData {
+  userId              String   @id
+  weightInGrams       Int
+  heightInCentimeters Int
+  age                 Int
+  bodyFatPercentage   Int // 0-100 (100 = 100%)
+  createdAt           DateTime @default(now()) @db.Timestamptz()
+  updatedAt           DateTime @updatedAt @db.Timestamptz()
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_train_data")
 }
 
 model WorkoutPlan {
