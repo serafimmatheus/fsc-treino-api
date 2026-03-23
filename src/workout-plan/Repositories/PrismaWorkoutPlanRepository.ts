@@ -5,12 +5,56 @@ import type {
   WorkoutDayWithDetails,
   WorkoutPlanActiveWithDetails,
   WorkoutPlanById,
+  WorkoutPlanWithDaysAndExercises,
   WorkoutPlanWithDaysSummary,
   WorkoutPlanWithRelations,
 } from "./contracts/IWorkoutPlanRepository.js";
 
 export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async findManyByUserId(
+    userId: string,
+    active?: boolean,
+  ): Promise<WorkoutPlanWithDaysAndExercises[]> {
+    const results = await this.prisma.workoutPlan.findMany({
+      where: {
+        userId,
+        ...(active !== undefined && { isActive: active }),
+      },
+      include: {
+        workoutDays: {
+          include: {
+            workoutExercises: { orderBy: { order: "asc" } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return results.map((wp) => ({
+      id: wp.id,
+      name: wp.name,
+      isActive: wp.isActive,
+      workoutDays: wp.workoutDays.map((wd) => ({
+        id: wd.id,
+        name: wd.name,
+        isRest: wd.isRest,
+        weekDay: wd.weekDay,
+        coverImageUrl: wd.coverImageUrl,
+        estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
+        workoutExercises: wd.workoutExercises.map((ex) => ({
+          id: ex.id,
+          order: ex.order,
+          name: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          restTimeInSeconds: ex.restTimeInSeconds,
+          workoutDayId: ex.workoutDayId,
+        })),
+      })),
+    }));
+  }
 
   async findActiveByUserId(
     userId: string,

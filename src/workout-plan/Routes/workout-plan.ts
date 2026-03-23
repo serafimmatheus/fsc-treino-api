@@ -12,6 +12,8 @@ import {
   GetWorkoutDayResponseSchema,
   GetWorkoutPlanParamsSchema,
   GetWorkoutPlanResponseSchema,
+  ListWorkoutPlansQuerySchema,
+  ListWorkoutPlansResponseSchema,
   StartWorkoutSessionParamsSchema,
   StartWorkoutSessionResponseSchema,
   UpdateWorkoutSessionBodySchema,
@@ -22,6 +24,7 @@ import {
 import type { CreateWorkoutPlan } from "../UseCases/CreateWorkoutPlan.js";
 import type { GetWorkoutDay } from "../UseCases/GetWorkoutDay.js";
 import type { GetWorkoutPlan } from "../UseCases/GetWorkoutPlan.js";
+import type { ListWorkoutPlans } from "../UseCases/ListWorkoutPlans.js";
 import type { StartWorkoutSession } from "../UseCases/StartWorkoutSession.js";
 import type { UpdateWorkoutSession } from "../UseCases/UpdateWorkoutSession.js";
 
@@ -29,6 +32,7 @@ interface WorkoutPlanRoutesOptions {
   createWorkoutPlan: CreateWorkoutPlan;
   getWorkoutDay: GetWorkoutDay;
   getWorkoutPlan: GetWorkoutPlan;
+  listWorkoutPlans: ListWorkoutPlans;
   startWorkoutSession: StartWorkoutSession;
   updateWorkoutSession: UpdateWorkoutSession;
 }
@@ -40,9 +44,55 @@ export const workoutPlanRoutes: FastifyPluginAsync<
     createWorkoutPlan,
     getWorkoutDay,
     getWorkoutPlan,
+    listWorkoutPlans,
     startWorkoutSession,
     updateWorkoutSession,
   } = opts;
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "GET",
+    url: "/",
+    schema: {
+      tags: ["Workout Plan"],
+      summary: "List workout plans",
+      description:
+        "Lista os planos de treino do usuário. Use o filtro active para filtrar por plano ativo ou inativo.",
+      querystring: ListWorkoutPlansQuerySchema,
+      response: {
+        200: ListWorkoutPlansResponseSchema,
+        401: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            message: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const { active } = request.query;
+        const result = await listWorkoutPlans.execute({
+          userId: session.user.id,
+          active,
+        });
+
+        return reply.status(200).send(result);
+      } catch (error) {
+        app.log.error(error);
+        return reply.status(500).send({
+          message: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
 
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",

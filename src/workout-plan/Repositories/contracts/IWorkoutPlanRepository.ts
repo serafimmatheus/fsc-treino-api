@@ -68,6 +68,29 @@ export interface WorkoutPlanActiveWithDetails {
   }>;
 }
 
+export interface WorkoutPlanWithDaysAndExercises {
+  id: string;
+  name: string;
+  isActive: boolean;
+  workoutDays: Array<{
+    id: string;
+    name: string;
+    isRest: boolean;
+    weekDay: WeekDay;
+    coverImageUrl: string | null;
+    estimatedDurationInSeconds: number;
+    workoutExercises: Array<{
+      id: string;
+      order: number;
+      name: string;
+      sets: number;
+      reps: number;
+      restTimeInSeconds: number;
+      workoutDayId: string;
+    }>;
+  }>;
+}
+
 export interface WorkoutPlanWithDaysSummary {
   id: string;
   name: string;
@@ -108,6 +131,10 @@ export interface WorkoutDayWithDetails {
 }
 
 export interface IWorkoutPlanRepository {
+  findManyByUserId(
+    userId: string,
+    active?: boolean,
+  ): Promise<WorkoutPlanWithDaysAndExercises[]>;
   findById(id: string): Promise<WorkoutPlanById | null>;
   findWorkoutDayByIdWithDetails(
     workoutDayId: string,

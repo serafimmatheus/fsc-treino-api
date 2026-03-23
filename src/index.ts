@@ -23,6 +23,7 @@ import { workoutPlanRoutes } from "./workout-plan/Routes/workout-plan.js";
 import { CreateWorkoutPlan } from "./workout-plan/UseCases/CreateWorkoutPlan.js";
 import { GetWorkoutDay } from "./workout-plan/UseCases/GetWorkoutDay.js";
 import { GetWorkoutPlan } from "./workout-plan/UseCases/GetWorkoutPlan.js";
+import { ListWorkoutPlans } from "./workout-plan/UseCases/ListWorkoutPlans.js";
 import { StartWorkoutSession } from "./workout-plan/UseCases/StartWorkoutSession.js";
 import { UpdateWorkoutSession } from "./workout-plan/UseCases/UpdateWorkoutSession.js";
 
@@ -81,6 +82,7 @@ const userWorkoutSessionRepository = new PrismaUserWorkoutSessionRepository(
 const createWorkoutPlan = new CreateWorkoutPlan(workoutPlanRepository);
 const getWorkoutDay = new GetWorkoutDay(workoutPlanRepository);
 const getWorkoutPlan = new GetWorkoutPlan(workoutPlanRepository);
+const listWorkoutPlans = new ListWorkoutPlans(workoutPlanRepository);
 const startWorkoutSession = new StartWorkoutSession(
   workoutPlanRepository,
   userWorkoutSessionRepository,
@@ -108,6 +110,7 @@ await app.register(workoutPlanRoutes, {
   createWorkoutPlan,
   getWorkoutDay,
   getWorkoutPlan,
+  listWorkoutPlans,
   startWorkoutSession,
   updateWorkoutSession,
 });
