@@ -12,8 +12,6 @@ export class PrismaUserTrainDataRepository implements IUserTrainDataRepository {
     userId: string,
     data: UpsertUserTrainDataRepositoryData,
   ): Promise<UpsertUserTrainDataRepositoryData & { userId: string }> {
-    const bodyFatPercentageDb = Math.round(data.bodyFatPercentage * 100);
-
     const result = await this.prisma.userTrainData.upsert({
       where: { userId },
       create: {
@@ -21,13 +19,13 @@ export class PrismaUserTrainDataRepository implements IUserTrainDataRepository {
         weightInGrams: data.weightInGrams,
         heightInCentimeters: data.heightInCentimeters,
         age: data.age,
-        bodyFatPercentage: bodyFatPercentageDb,
+        bodyFatPercentage: data.bodyFatPercentage,
       },
       update: {
         weightInGrams: data.weightInGrams,
         heightInCentimeters: data.heightInCentimeters,
         age: data.age,
-        bodyFatPercentage: bodyFatPercentageDb,
+        bodyFatPercentage: data.bodyFatPercentage,
       },
     });
 
@@ -36,7 +34,7 @@ export class PrismaUserTrainDataRepository implements IUserTrainDataRepository {
       weightInGrams: result.weightInGrams,
       heightInCentimeters: result.heightInCentimeters,
       age: result.age,
-      bodyFatPercentage: result.bodyFatPercentage / 100,
+      bodyFatPercentage: result.bodyFatPercentage,
     };
   }
 
@@ -54,7 +52,7 @@ export class PrismaUserTrainDataRepository implements IUserTrainDataRepository {
       weightInGrams: result.weightInGrams,
       heightInCentimeters: result.heightInCentimeters,
       age: result.age,
-      bodyFatPercentage: result.bodyFatPercentage / 100,
+      bodyFatPercentage: result.bodyFatPercentage,
     };
   }
 }

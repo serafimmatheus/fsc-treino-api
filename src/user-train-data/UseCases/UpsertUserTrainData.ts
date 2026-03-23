@@ -5,7 +5,7 @@ export interface UpsertUserTrainDataInput {
   weightInGrams: number;
   heightInCentimeters: number;
   age: number;
-  bodyFatPercentage: number; // 1 representa 100%
+  bodyFatPercentage: number; // 0-100 (inteiro)
 }
 
 export interface UpsertUserTrainDataOutput {

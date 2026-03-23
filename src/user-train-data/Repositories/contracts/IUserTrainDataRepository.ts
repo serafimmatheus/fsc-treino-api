@@ -2,7 +2,7 @@ export interface UpsertUserTrainDataRepositoryData {
   weightInGrams: number;
   heightInCentimeters: number;
   age: number;
-  bodyFatPercentage: number; // 0-1 (1 = 100%)
+  bodyFatPercentage: number; // 0-100 (inteiro)
 }
 
 export interface UserTrainDataWithUser {
@@ -11,7 +11,7 @@ export interface UserTrainDataWithUser {
   weightInGrams: number;
   heightInCentimeters: number;
   age: number;
-  bodyFatPercentage: number; // 0-1 (1 = 100%)
+  bodyFatPercentage: number; // 0-100 (inteiro)
 }
 
 export interface IUserTrainDataRepository {
