@@ -9,6 +9,19 @@ export class PrismaUserWorkoutSessionRepository
 {
   constructor(private readonly prisma: PrismaClient) {}
 
+  async findActiveByUserId(
+    userId: string,
+  ): Promise<UserWorkoutSessionById | null> {
+    const session = await this.prisma.userWorkoutSession.findFirst({
+      where: {
+        userId,
+        completedAt: null,
+      },
+      select: { id: true },
+    });
+    return session;
+  }
+
   async findActiveByWorkoutDayId(
     workoutDayId: string,
   ): Promise<UserWorkoutSessionById | null> {

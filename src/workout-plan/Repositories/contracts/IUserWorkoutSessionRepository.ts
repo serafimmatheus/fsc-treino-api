@@ -3,6 +3,7 @@ export interface UserWorkoutSessionById {
 }
 
 export interface IUserWorkoutSessionRepository {
+  findActiveByUserId(userId: string): Promise<UserWorkoutSessionById | null>;
   findActiveByWorkoutDayId(
     workoutDayId: string,
   ): Promise<UserWorkoutSessionById | null>;

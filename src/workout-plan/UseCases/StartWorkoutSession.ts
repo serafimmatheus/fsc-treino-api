@@ -38,11 +38,11 @@ export class StartWorkoutSession {
     }
 
     const activeSession =
-      await this.userWorkoutSessionRepository.findActiveByWorkoutDayId(
-        workoutDayId,
-      );
+      await this.userWorkoutSessionRepository.findActiveByUserId(userId);
     if (activeSession) {
-      throw new ErrorConflict("Este dia já possui uma sessão de treino iniciada");
+      throw new ErrorConflict(
+        "Você já possui uma sessão de treino ativa. Finalize-a antes de iniciar outra.",
+      );
     }
 
     const { id } = await this.userWorkoutSessionRepository.create(
