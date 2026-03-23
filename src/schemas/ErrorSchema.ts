@@ -7,6 +7,15 @@ export const ErrorSchema = z.object({
   code: z.string(),
 });
 
+export const StartWorkoutSessionResponseSchema = z.object({
+  userWorkoutSessionId: z.string().cuid(),
+});
+
+export const StartWorkoutSessionParamsSchema = z.object({
+  workoutPlanId: z.string().cuid(),
+  workoutDayId: z.string().cuid(),
+});
+
 export const WorkoutPlanSchema = z.object({
   id: z.cuid(),
   name: z.string().trim().min(1, { message: "Nome é obrigatório" }),

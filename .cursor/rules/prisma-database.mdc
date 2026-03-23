@@ -15,7 +15,8 @@ alwaysApply: false
 ## Uso do cliente
 
 - Usar singleton `prisma` de `lib/db.js` **apenas nos Repositories** (adapters de persistência).
-- UseCases não importam Prisma; dependem de interfaces em `Repositories/contracts/`.
+- Repositories ficam em `<dominio>/Repositories/` (ex: `workout-plan/Repositories/`).
+- UseCases não importam Prisma; dependem de interfaces em `<dominio>/Repositories/contracts/`.
 - Em dev: reutilizar instância via `globalForPrisma`.
 - Transações: `prisma.$transaction(async (tx) => { ... })` dentro do Repository quando operações forem atômicas.
 

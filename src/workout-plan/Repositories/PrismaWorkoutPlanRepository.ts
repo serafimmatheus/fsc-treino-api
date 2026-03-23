@@ -1,12 +1,30 @@
-import type { PrismaClient } from "../generated/prisma/client.js";
+import type { PrismaClient } from "../../generated/prisma/client.js";
 import type {
   CreateWorkoutPlanRepositoryData,
   IWorkoutPlanRepository,
+  WorkoutPlanById,
   WorkoutPlanWithRelations,
 } from "./contracts/IWorkoutPlanRepository.js";
 
 export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
   constructor(private readonly prisma: PrismaClient) {}
+
+  async findById(id: string): Promise<WorkoutPlanById | null> {
+    const result = await this.prisma.workoutPlan.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        userId: true,
+        workoutDays: { select: { id: true } },
+      },
+    });
+    if (!result) return null;
+    return {
+      id: result.id,
+      userId: result.userId,
+      workoutDays: result.workoutDays.map((wd) => ({ id: wd.id })),
+    };
+  }
 
   async createReplacingActive(
     userId: string,

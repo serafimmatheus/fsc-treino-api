@@ -1,4 +1,4 @@
-import type { WeekDay } from "../generated/prisma/enums.js";
+import type { WeekDay } from "../../generated/prisma/enums.js";
 import type {
   CreateWorkoutPlanRepositoryData,
   IWorkoutPlanRepository,

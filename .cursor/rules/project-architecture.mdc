@@ -27,23 +27,32 @@ API para bootcamp de treinos do FSC. Arquitetura hexagonal com inversão de depe
 
 ## Estrutura de pastas
 
+- **Organização por domínio**: cada domínio (ex: workout-plan) vive em pasta própria com suas camadas. Evita arquivos soltos; mantém coesão.
+- **Compartilhados na raiz**: schemas, errors, lib ficam em `src/` para reuso entre domínios.
+
 ```
 fsc-treino-api/
 ├── prisma/
 │   └── schema.prisma
 ├── src/
 │   ├── index.ts              # Entrada, registra rotas, faz DI
-│   ├── Routes/               # Adapters de entrada (HTTP)
-│   ├── UseCases/             # Casos de uso (orquestram lógica)
-│   ├── Services/             # Serviços de domínio (regras compartilhadas)
-│   ├── Repositories/         # Implementações de persistência (adapters)
-│   │   ├── contracts/        # Interfaces (ports) - IRepository, etc.
-│   │   └── ...               # Implementações (ex: PrismaWorkoutPlanRepository)
-│   ├── schemas/              # Schemas Zod para validação
-│   ├── errors/               # Erros customizados
+│   ├── workout-plan/         # Domínio workout-plan (planos e sessões de treino)
+│   │   ├── Repositories/
+│   │   │   ├── contracts/    # Interfaces (ports)
+│   │   │   ├── PrismaWorkoutPlanRepository.ts
+│   │   │   └── PrismaUserWorkoutSessionRepository.ts
+│   │   ├── UseCases/
+│   │   │   ├── CreateWorkoutPlan.ts
+│   │   │   └── StartWorkoutSession.ts
+│   │   └── Routes/
+│   │       └── workout-plan.ts
+│   ├── schemas/              # Schemas Zod (compartilhados)
+│   ├── errors/               # Erros customizados (compartilhados)
 │   ├── lib/                  # auth.ts, db.ts
 │   └── generated/prisma/    # Cliente Prisma (não editar)
 ```
+
+- Novos domínios seguem o mesmo padrão: `src/<dominio>/Repositories/`, `UseCases/`, `Routes/`.
 
 ## Convenções gerais
 

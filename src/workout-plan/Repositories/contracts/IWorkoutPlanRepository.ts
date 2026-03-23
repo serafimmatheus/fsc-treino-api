@@ -1,4 +1,4 @@
-import type { WeekDay } from "../../generated/prisma/enums.js";
+import type { WeekDay } from "../../../generated/prisma/enums.js";
 
 export interface CreateWorkoutPlanRepositoryData {
   userId: string;
@@ -42,7 +42,14 @@ export interface WorkoutPlanWithRelations {
   }>;
 }
 
+export interface WorkoutPlanById {
+  id: string;
+  userId: string;
+  workoutDays: Array<{ id: string }>;
+}
+
 export interface IWorkoutPlanRepository {
+  findById(id: string): Promise<WorkoutPlanById | null>;
   createReplacingActive(
     userId: string,
     data: Omit<CreateWorkoutPlanRepositoryData, "userId">,
