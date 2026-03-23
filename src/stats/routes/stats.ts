@@ -2,13 +2,10 @@ import { fromNodeHeaders } from "better-auth/node";
 import type { FastifyPluginAsync } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { auth } from "../lib/auth.js";
-import { ErrorSchema } from "../schemas/ErrorSchema.js";
-import {
-  GetStatsQuerySchema,
-  GetStatsResponseSchema,
-} from "../stats/schemas.js";
-import type { GetStats } from "../stats/UseCases/GetStats.js";
+import { auth } from "../../lib/auth.js";
+import { ErrorSchema } from "../../schemas/ErrorSchema.js";
+import { GetStatsQuerySchema, GetStatsResponseSchema } from "../schemas.js";
+import type { GetStats } from "../UseCases/GetStats.js";
 
 interface StatsRoutesOptions {
   getStats: GetStats;

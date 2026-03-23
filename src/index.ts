@@ -15,7 +15,7 @@ import { homeRoutes } from "./home/Routes/home.js";
 import { GetHomeData } from "./home/UseCases/GetHomeData.js";
 import { auth } from "./lib/auth.js";
 import { prisma } from "./lib/db.js";
-import { statsRoutes } from "./routes/stats.js";
+import { statsRoutes } from "./stats/routes/stats.js";
 import { GetStats } from "./stats/UseCases/GetStats.js";
 import { PrismaUserWorkoutSessionRepository } from "./workout-plan/Repositories/PrismaUserWorkoutSessionRepository.js";
 import { PrismaWorkoutPlanRepository } from "./workout-plan/Repositories/PrismaWorkoutPlanRepository.js";
