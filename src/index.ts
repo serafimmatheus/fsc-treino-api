@@ -13,6 +13,7 @@ import {
 
 import { homeRoutes } from "./home/Routes/home.js";
 import { GetHomeData } from "./home/UseCases/GetHomeData.js";
+import { iaRoutes } from "./IA/routes/ia.js";
 import { auth } from "./lib/auth.js";
 import { prisma } from "./lib/db.js";
 import { statsRoutes } from "./stats/routes/stats.js";
@@ -20,6 +21,7 @@ import { GetStats } from "./stats/UseCases/GetStats.js";
 import { PrismaUserTrainDataRepository } from "./user-train-data/Repositories/PrismaUserTrainDataRepository.js";
 import { userTrainDataRoutes } from "./user-train-data/Routes/user-train-data.js";
 import { GetUserTrainData } from "./user-train-data/UseCases/GetUserTrainData.js";
+import { UpsertUserTrainData } from "./user-train-data/UseCases/UpsertUserTrainData.js";
 import { PrismaUserWorkoutSessionRepository } from "./workout-plan/Repositories/PrismaUserWorkoutSessionRepository.js";
 import { PrismaWorkoutPlanRepository } from "./workout-plan/Repositories/PrismaWorkoutPlanRepository.js";
 import { workoutPlanRoutes } from "./workout-plan/Routes/workout-plan.js";
@@ -104,6 +106,7 @@ const getStats = new GetStats(
 );
 const userTrainDataRepository = new PrismaUserTrainDataRepository(prisma);
 const getUserTrainData = new GetUserTrainData(userTrainDataRepository);
+const upsertUserTrainData = new UpsertUserTrainData(userTrainDataRepository);
 
 // Routes
 await app.register(homeRoutes, {
@@ -126,6 +129,13 @@ await app.register(statsRoutes, {
 await app.register(userTrainDataRoutes, {
   prefix: "",
   getUserTrainData,
+});
+await app.register(iaRoutes, {
+  prefix: "/ia",
+  getUserTrainData,
+  upsertUserTrainData,
+  listWorkoutPlans,
+  createWorkoutPlan,
 });
 
 app.withTypeProvider<ZodTypeProvider>().route({
