@@ -2,6 +2,7 @@ import type { PrismaClient } from "../../generated/prisma/client.js";
 import type {
   CreateWorkoutPlanRepositoryData,
   IWorkoutPlanRepository,
+  WorkoutDayWithDetails,
   WorkoutPlanActiveWithDetails,
   WorkoutPlanById,
   WorkoutPlanWithDaysSummary,
@@ -92,6 +93,46 @@ export class PrismaWorkoutPlanRepository implements IWorkoutPlanRepository {
       id: result.id,
       userId: result.userId,
       workoutDays: result.workoutDays.map((wd) => ({ id: wd.id })),
+    };
+  }
+
+  async findWorkoutDayByIdWithDetails(
+    workoutDayId: string,
+    userId: string,
+  ): Promise<WorkoutDayWithDetails | null> {
+    const result = await this.prisma.workoutDay.findFirst({
+      where: {
+        id: workoutDayId,
+        workoutPlan: { userId },
+      },
+      include: {
+        workoutExercises: { orderBy: { order: "asc" } },
+        userWorkoutSessions: { where: { userId } },
+      },
+    });
+    if (!result) return null;
+    return {
+      id: result.id,
+      name: result.name,
+      isRest: result.isRest,
+      weekDay: result.weekDay,
+      coverImageUrl: result.coverImageUrl,
+      estimatedDurationInSeconds: result.estimatedDurationInSeconds,
+      workoutExercises: result.workoutExercises.map((ex) => ({
+        id: ex.id,
+        order: ex.order,
+        name: ex.name,
+        sets: ex.sets,
+        reps: ex.reps,
+        restTimeInSeconds: ex.restTimeInSeconds,
+        workoutDayId: ex.workoutDayId,
+      })),
+      userWorkoutSessions: result.userWorkoutSessions.map((s) => ({
+        id: s.id,
+        workoutDayId: s.workoutDayId,
+        startedAt: s.startedAt,
+        completedAt: s.completedAt,
+      })),
     };
   }
 
