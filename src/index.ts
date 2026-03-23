@@ -57,7 +57,11 @@ await app.register(fastifySwagger, {
 });
 
 await app.register(fastifyCors, {
-  origin: [`http://localhost:${process.env.PORT || 5555}`],
+  origin: [
+    `http://localhost:${process.env.PORT || 5555}`,
+    process.env.BETTER_AUTH_TRUSTED_ORIGIN || "http://localhost:3000",
+    "http://localhost:3000",
+  ],
   credentials: true,
 });
 
