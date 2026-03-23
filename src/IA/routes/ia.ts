@@ -116,7 +116,7 @@ export const iaRoutes: FastifyPluginAsync<IaRoutesOptions> = async (
         messages: z.array(z.any()),
       }),
       response: {
-        200: { description: "Stream de resposta" },
+        200: z.any().describe("Stream de resposta"),
         401: ErrorSchema,
         500: ErrorSchema,
       },
