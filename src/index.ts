@@ -12,7 +12,10 @@ import {
 } from "fastify-type-provider-zod";
 
 import { auth } from "./lib/auth.js";
+import { prisma } from "./lib/db.js";
+import { PrismaWorkoutPlanRepository } from "./Repositories/PrismaWorkoutPlanRepository.js";
 import { workoutPlanRoutes } from "./Routes/workout-plan.js";
+import { CreateWorkoutPlan } from "./UseCases/CreateWorkoutPlan.js";
 
 const app = Fastify({
   logger: true,
@@ -61,8 +64,15 @@ await app.register(fastifyApiReference, {
   },
 });
 
+// DI container - Repositories & UseCases
+const workoutPlanRepository = new PrismaWorkoutPlanRepository(prisma);
+const createWorkoutPlan = new CreateWorkoutPlan(workoutPlanRepository);
+
 // Routes
-await app.register(workoutPlanRoutes, { prefix: "/workout-plans" });
+await app.register(workoutPlanRoutes, {
+  prefix: "/workout-plans",
+  createWorkoutPlan,
+});
 
 app.withTypeProvider<ZodTypeProvider>().route({
   method: "GET",

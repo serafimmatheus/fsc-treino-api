@@ -1,8 +1,10 @@
-import { ErrorNotFound } from "../errors/ErrorNotFound.js";
-import { WeekDay } from "../generated/prisma/enums.js";
-import { prisma } from "../lib/db.js";
+import type { WeekDay } from "../generated/prisma/enums.js";
+import type {
+  CreateWorkoutPlanRepositoryData,
+  IWorkoutPlanRepository,
+} from "../Repositories/contracts/IWorkoutPlanRepository.js";
 
-interface CreateWorkoutPlanDataInput {
+export interface CreateWorkoutPlanDataInput {
   userId: string;
   name: string;
   workoutDays: WorkoutDayData[];
@@ -25,63 +27,29 @@ interface ExerciseData {
 }
 
 export class CreateWorkoutPlan {
+  constructor(
+    private readonly workoutPlanRepository: IWorkoutPlanRepository,
+  ) {}
+
   async execute(dto: CreateWorkoutPlanDataInput) {
-    const existingWorkoutPlan = await prisma.workoutPlan.findFirst({
-      where: {
-        userId: dto.userId,
-        isActive: true,
-      },
-    });
+    const data: CreateWorkoutPlanRepositoryData = {
+      userId: dto.userId,
+      name: dto.name,
+      workoutDays: dto.workoutDays.map((wd) => ({
+        name: wd.name,
+        weekDay: wd.weekDay,
+        isRest: wd.isRest,
+        estimatedDurationInSeconds: wd.estimatedDurationInSeconds,
+        exercises: wd.exercises.map((ex) => ({
+          order: ex.order,
+          name: ex.name,
+          sets: ex.sets,
+          reps: ex.reps,
+          restTimeInSeconds: ex.restTimeInSeconds,
+        })),
+      })),
+    };
 
-    return prisma.$transaction(async (tx) => {
-      if (existingWorkoutPlan) {
-        await tx.workoutPlan.update({
-          where: { id: existingWorkoutPlan.id },
-          data: { isActive: false },
-        });
-      }
-
-      const workoutPlan = await tx.workoutPlan.create({
-        data: {
-          name: dto.name,
-          userId: dto.userId,
-          workoutDays: {
-            create: dto.workoutDays.map((workoutDay) => ({
-              name: workoutDay.name,
-              weekDay: workoutDay.weekDay,
-              estimatedDurationInSeconds: workoutDay.estimatedDurationInSeconds,
-              workoutExercises: {
-                create: workoutDay.exercises.map((exercise) => ({
-                  order: exercise.order,
-                  name: exercise.name,
-                  sets: exercise.sets,
-                  reps: exercise.reps,
-                  restTimeInSeconds: exercise.restTimeInSeconds,
-                })),
-              },
-            })),
-          },
-        },
-      });
-
-      const result = await tx.workoutPlan.findUnique({
-        where: {
-          id: workoutPlan.id,
-        },
-        include: {
-          workoutDays: {
-            include: {
-              workoutExercises: true,
-            },
-          },
-        },
-      });
-
-      if (!result) {
-        throw new ErrorNotFound("Plano de treino não encontrado");
-      }
-
-      return result;
-    });
+    return this.workoutPlanRepository.createReplacingActive(dto.userId, data);
   }
 }

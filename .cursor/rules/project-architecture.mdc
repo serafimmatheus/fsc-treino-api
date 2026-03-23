@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## Visão geral
 
-API para bootcamp de treinos do FSC. A aplicação principal está em `fsc-treino-api/`.
+API para bootcamp de treinos do FSC. Arquitetura hexagonal com inversão de dependências (SOLID).
 
 ## Stack
 
@@ -19,6 +19,12 @@ API para bootcamp de treinos do FSC. A aplicação principal está em `fsc-trein
 - **Documentação**: OpenAPI/Swagger + Scalar API Reference em `/api`
 - **Pacote**: pnpm
 
+## Arquitetura hexagonal + SOLID
+
+- **Inversão de dependência**: UseCases e Services dependem de interfaces (ports), não de implementações concretas.
+- **Injeção de dependências**: Repositories e Services são injetados via construtor nos UseCases.
+- **Camadas**: Routes → UseCases → Services (opcional) → Repositories (via interface).
+
 ## Estrutura de pastas
 
 ```
@@ -26,13 +32,17 @@ fsc-treino-api/
 ├── prisma/
 │   └── schema.prisma
 ├── src/
-│   ├── index.ts           # Entrada, registra rotas e plugins
-│   ├── Routes/            # Definição de rotas por domínio
-│   ├── UseCases/          # Lógica de negócio (classes)
-│   ├── schemas/           # Schemas Zod para validação
-│   ├── errors/            # Erros customizados (ErrorNotFound, etc.)
-│   ├── lib/               # auth.ts, db.ts
-│   └── generated/prisma/  # Cliente Prisma (não editar)
+│   ├── index.ts              # Entrada, registra rotas, faz DI
+│   ├── Routes/               # Adapters de entrada (HTTP)
+│   ├── UseCases/             # Casos de uso (orquestram lógica)
+│   ├── Services/             # Serviços de domínio (regras compartilhadas)
+│   ├── Repositories/         # Implementações de persistência (adapters)
+│   │   ├── contracts/        # Interfaces (ports) - IRepository, etc.
+│   │   └── ...               # Implementações (ex: PrismaWorkoutPlanRepository)
+│   ├── schemas/              # Schemas Zod para validação
+│   ├── errors/               # Erros customizados
+│   ├── lib/                  # auth.ts, db.ts
+│   └── generated/prisma/    # Cliente Prisma (não editar)
 ```
 
 ## Convenções gerais
