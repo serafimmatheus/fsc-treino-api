@@ -10,20 +10,25 @@ import {
   ErrorSchema,
   StartWorkoutSessionParamsSchema,
   StartWorkoutSessionResponseSchema,
+  UpdateWorkoutSessionBodySchema,
+  UpdateWorkoutSessionParamsSchema,
+  UpdateWorkoutSessionResponseSchema,
   WorkoutPlanSchema,
 } from "../../schemas/ErrorSchema.js";
 import type { CreateWorkoutPlan } from "../UseCases/CreateWorkoutPlan.js";
 import type { StartWorkoutSession } from "../UseCases/StartWorkoutSession.js";
+import type { UpdateWorkoutSession } from "../UseCases/UpdateWorkoutSession.js";
 
 interface WorkoutPlanRoutesOptions {
   createWorkoutPlan: CreateWorkoutPlan;
   startWorkoutSession: StartWorkoutSession;
+  updateWorkoutSession: UpdateWorkoutSession;
 }
 
 export const workoutPlanRoutes: FastifyPluginAsync<
   WorkoutPlanRoutesOptions
 > = async (app, opts) => {
-  const { createWorkoutPlan, startWorkoutSession } = opts;
+  const { createWorkoutPlan, startWorkoutSession, updateWorkoutSession } = opts;
 
   app.withTypeProvider<ZodTypeProvider>().route({
     method: "POST",
@@ -151,6 +156,69 @@ export const workoutPlanRoutes: FastifyPluginAsync<
         }
         if (error instanceof ErrorConflict) {
           return reply.status(409).send({
+            message: error.message,
+            code: error.name.toUpperCase(),
+          });
+        }
+        return reply.status(500).send({
+          message: "Internal server error",
+          code: "INTERNAL_SERVER_ERROR",
+        });
+      }
+    },
+  });
+
+  app.withTypeProvider<ZodTypeProvider>().route({
+    method: "PATCH",
+    url: "/:workoutPlanId/days/:workoutDayId/sessions/:sessionId",
+    schema: {
+      tags: ["Workout Plan"],
+      summary: "Update a workout session",
+      description: "Atualiza uma sessão de treino específica",
+      params: UpdateWorkoutSessionParamsSchema,
+      body: UpdateWorkoutSessionBodySchema,
+      response: {
+        200: UpdateWorkoutSessionResponseSchema,
+        401: ErrorSchema,
+        403: ErrorSchema,
+        404: ErrorSchema,
+        500: ErrorSchema,
+      },
+    },
+    handler: async (request, reply) => {
+      try {
+        const session = await auth.api.getSession({
+          headers: fromNodeHeaders(request.headers),
+        });
+
+        if (!session) {
+          return reply.status(401).send({
+            message: "Unauthorized",
+            code: "UNAUTHORIZED",
+          });
+        }
+
+        const { workoutPlanId, workoutDayId, sessionId } = request.params;
+        const { completedAt } = request.body;
+        const result = await updateWorkoutSession.execute({
+          userId: session.user.id,
+          workoutPlanId,
+          workoutDayId,
+          sessionId,
+          completedAt,
+        });
+
+        return reply.status(200).send(result);
+      } catch (error) {
+        app.log.error(error);
+        if (error instanceof ErrorNotFound) {
+          return reply.status(404).send({
+            message: error.message,
+            code: error.name.toUpperCase(),
+          });
+        }
+        if (error instanceof ErrorForbidden) {
+          return reply.status(403).send({
             message: error.message,
             code: error.name.toUpperCase(),
           });

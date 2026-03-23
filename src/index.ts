@@ -18,6 +18,7 @@ import { PrismaWorkoutPlanRepository } from "./workout-plan/Repositories/PrismaW
 import { workoutPlanRoutes } from "./workout-plan/Routes/workout-plan.js";
 import { CreateWorkoutPlan } from "./workout-plan/UseCases/CreateWorkoutPlan.js";
 import { StartWorkoutSession } from "./workout-plan/UseCases/StartWorkoutSession.js";
+import { UpdateWorkoutSession } from "./workout-plan/UseCases/UpdateWorkoutSession.js";
 
 const app = Fastify({
   logger: true,
@@ -75,12 +76,17 @@ const startWorkoutSession = new StartWorkoutSession(
   workoutPlanRepository,
   userWorkoutSessionRepository,
 );
+const updateWorkoutSession = new UpdateWorkoutSession(
+  workoutPlanRepository,
+  userWorkoutSessionRepository,
+);
 
 // Routes
 await app.register(workoutPlanRoutes, {
   prefix: "/workout-plans",
   createWorkoutPlan,
   startWorkoutSession,
+  updateWorkoutSession,
 });
 
 app.withTypeProvider<ZodTypeProvider>().route({
