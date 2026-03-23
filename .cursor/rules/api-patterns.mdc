@@ -1,0 +1,57 @@
+---
+description: Padrões de Routes, UseCases, schemas e erros
+globs: fsc-treino-api/src/**/*.ts
+alwaysApply: false
+---
+
+# Padrões da API
+
+## Routes
+
+- Cada domínio em arquivo próprio: `Routes/<dominio>.ts`.
+- Usar `FastifyInstance` + `ZodTypeProvider` com `app.withTypeProvider<ZodTypeProvider>().route()`.
+- Sempre definir `schema.body`, `schema.response` (201, 400, 401, 404, 500).
+- Autenticação: `auth.api.getSession({ headers: fromNodeHeaders(request.headers) })`.
+- Rotas protegidas: checar `session` e retornar 401 se ausente.
+- Tratar erros com `instanceof` (ex: `ErrorNotFound`) e mapear para códigos HTTP corretos.
+- Registrar rotas no `index.ts` com `prefix`.
+
+```typescript
+// ✅ Exemplo
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: "POST",
+  url: "/",
+  schema: { body: Schema, response: { 201: ResponseSchema, 401: ErrorSchema, ... } },
+  handler: async (request, reply) => { ... }
+});
+```
+
+## UseCases
+
+- Uma classe por caso de uso: `UseCases/<NomeDoCaso>.ts`.
+- Método `execute(dto)` com interface de entrada tipada.
+- Usar `prisma` de `lib/db.js` (singleton com adapter PrismaPg).
+- Operações atômicas: `prisma.$transaction()` quando múltiplas writes.
+- Lançar erros customizados (`ErrorNotFound`, etc.) para propagar até a Route.
+
+```typescript
+// ✅ Exemplo
+export class CreateWorkoutPlan {
+  async execute(dto: CreateWorkoutPlanDataInput) {
+    return prisma.$transaction(async (tx) => { ... });
+  }
+}
+```
+
+## Schemas (Zod)
+
+- Arquivos em `schemas/` com export de schemas reutilizáveis.
+- Usar `z.object()`, validações `.min()`, `.trim()` para strings.
+- Enums do Prisma: `z.enum(WeekDay)` importando de `generated/prisma/enums.js`.
+- `ErrorSchema`: `z.object({ message: z.string(), code: z.string() })`.
+- Schemas de response consistentes com o body (omit `id` quando criar).
+
+## Erros
+
+- Classes que estendem `Error` com `name` e `statusCode`.
+- Exemplo: `ErrorNotFound` com `statusCode: 404`.

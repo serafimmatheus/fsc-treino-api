@@ -1,0 +1,43 @@
+---
+description: Arquitetura e stack do projeto FSC Treino
+alwaysApply: true
+---
+
+# Projeto FSC Treino
+
+## Visão geral
+
+API para bootcamp de treinos do FSC. A aplicação principal está em `fsc-treino-api/`.
+
+## Stack
+
+- **Runtime**: Node 24, ESM
+- **Framework**: Fastify 5
+- **Validação**: Zod + fastify-type-provider-zod
+- **ORM**: Prisma 7 (PostgreSQL)
+- **Auth**: Better Auth
+- **Documentação**: OpenAPI/Swagger + Scalar API Reference em `/api`
+- **Pacote**: pnpm
+
+## Estrutura de pastas
+
+```
+fsc-treino-api/
+├── prisma/
+│   └── schema.prisma
+├── src/
+│   ├── index.ts           # Entrada, registra rotas e plugins
+│   ├── Routes/            # Definição de rotas por domínio
+│   ├── UseCases/          # Lógica de negócio (classes)
+│   ├── schemas/           # Schemas Zod para validação
+│   ├── errors/            # Erros customizados (ErrorNotFound, etc.)
+│   ├── lib/               # auth.ts, db.ts
+│   └── generated/prisma/  # Cliente Prisma (não editar)
+```
+
+## Convenções gerais
+
+- Consultar **SETUP_BOILERPLATE.md** para setup e novos projetos nesta stack.
+- Variáveis sensíveis apenas em `.env`; nunca versionar.
+- Documentação em português.
+- Responder ao usuário em português.

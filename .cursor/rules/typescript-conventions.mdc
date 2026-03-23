@@ -1,0 +1,31 @@
+---
+description: Convenções TypeScript e imports ESM
+globs: fsc-treino-api/**/*.ts
+alwaysApply: false
+---
+
+# TypeScript e imports
+
+## Imports ESM
+
+- Com `moduleResolution: "nodenext"`, **sempre** usar extensão `.js` em imports locais:
+
+```typescript
+// ✅ BOM
+import { auth } from "./lib/auth.js";
+import { PrismaClient } from "../generated/prisma/client.js";
+
+// ❌ EVITAR
+import { auth } from "./lib/auth";
+```
+
+## Ordenação de imports
+
+- ESLint com `simple-import-sort`: imports ordenados automaticamente.
+- Manter ordem: externos primeiro, depois locais.
+
+## Configuração
+
+- `tsconfig`: `strict: true`, `module: nodenext`, `target: ES2024`.
+- Formatar com Prettier ao salvar.
+- Corrigir ESLint ao salvar (`source.fixAll.eslint`).
