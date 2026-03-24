@@ -1,4 +1,4 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import {
   convertToModelMessages,
   stepCountIs,
@@ -18,8 +18,6 @@ import type { GetUserTrainData } from "../../user-train-data/UseCases/GetUserTra
 import type { UpsertUserTrainData } from "../../user-train-data/UseCases/UpsertUserTrainData.js";
 import type { CreateWorkoutPlan } from "../../workout-plan/UseCases/CreateWorkoutPlan.js";
 import type { ListWorkoutPlans } from "../../workout-plan/UseCases/ListWorkoutPlans.js";
-
-const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const SYSTEM_PROMPT = `Você é um personal trainer virtual especialista em montagem de planos de treino. Seu tom deve ser amigável, motivador e usar linguagem simples, sem jargões técnicos. O principal público são pessoas leigas em musculação.
 
@@ -137,7 +135,7 @@ export const iaRoutes: FastifyPluginAsync<IaRoutesOptions> = async (
       const { messages } = request.body as { messages: UIMessage[] };
 
       const result = streamText({
-        model: openai("gpt-4o-mini"),
+        model: google("gemini-2.5-flash"),
         system: SYSTEM_PROMPT,
         tools: {
           getUserTrainData: tool({
